@@ -610,8 +610,9 @@ $('#closeInstall').addEventListener('click', () => {
 // ============ SERVICE WORKER ============
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(console.error);
-  });
+navigator.serviceWorker.register('sw.js')
+  .then(() => console.log("SW registered"))
+  .catch(console.error);  });
 }
 
 // ============ INIT ============
