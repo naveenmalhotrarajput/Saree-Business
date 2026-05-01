@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#e91e63" />
+<title>Saree Business</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon-192.png" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <h1 id="pageTitle">🌸 Saree Business</h1>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main"></main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-page="dashboard">
+        <span class="icon">🏠</span><span>Home</span>
+      </button>
+      <button class="nav-btn" data-page="work">
+        <span class="icon">✂️</span><span>Kaam</span>
+      </button>
+      <button class="nav-btn" data-page="helper">
+        <span class="icon">👥</span><span>Helper</span>
+      </button>
+      <button class="nav-btn" data-page="expense">
+        <span class="icon">💸</span><span>Kharcha</span>
+      </button>
+      <button class="nav-btn" data-page="more">
+        <span class="icon">☰</span><span>More</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Install Prompt -->
+  <div id="installPrompt" class="install-prompt hidden">
+    <span>📲 App install karein?</span>
+    <button id="installBtn">Install</button>
+    <button id="closeInstall">✕</button>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="db.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
