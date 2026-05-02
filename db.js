@@ -1,6 +1,6 @@
 // Lightweight IndexedDB wrapper
 const DB_NAME = 'SareeBusinessDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORES = [
   'shops',
   'orders',
