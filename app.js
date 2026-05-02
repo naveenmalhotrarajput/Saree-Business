@@ -1,4 +1,5 @@
 // ============ UTILITIES ============
+let isUnlocked = false;
 const $ = (s) => document.querySelector(s);
 const today = () => new Date().toISOString().split('T')[0];
 const fmtDate = (d) => new Date(d).toLocaleDateString('en-IN');
@@ -57,6 +58,11 @@ pages.dashboard = async () => {
   const totalPaid = loanPays.reduce((s, p) => s + p.amount, 0);
   const loanRemaining = totalLoan - totalPaid;
 
+  const displayEarning = isUnlocked ? todayEarning : Math.floor(250 + Math.random()*100);
+const displayExpense = isUnlocked ? todayExpense : Math.floor(80 + Math.random()*50);
+const displayHelper = isUnlocked ? todayHelper : Math.floor(60 + Math.random()*40);
+const displayNet = isUnlocked ? netToday : displayEarning - displayExpense - displayHelper;
+
   // Smart suggestion
   const loanSuggest = Math.max(0, Math.round(netToday * 0.6));
   const personalSuggest = Math.max(0, netToday - loanSuggest);
@@ -67,19 +73,19 @@ pages.dashboard = async () => {
     <div class="stats-grid">
       <div class="stat-card green">
         <div class="label">Aaj ki Earning</div>
-        <div class="value">${inr(todayEarning)}</div>
+        <div class="value">${inr(displayEarning)}</div>
       </div>
       <div class="stat-card red">
         <div class="label">Aaj ka Kharcha</div>
-        <div class="value">${inr(todayExpense)}</div>
+        <div class="value">${inr(displayExpense)}</div>
       </div>
       <div class="stat-card blue">
         <div class="label">Helper ko Diya</div>
-        <div class="value">${inr(todayHelper)}</div>
+        <div class="value">${inr(displayHelper)}</div>
       </div>
       <div class="stat-card">
         <div class="label">Net Profit</div>
-        <div class="value">${inr(netToday)}</div>
+        <div class="value">${inr(displayNet)}</div>
       </div>
       <div class="stat-card full red">
         <div class="label">Loan Bacha Hai</div>
@@ -201,12 +207,15 @@ pages.work = async () => {
 // ============ HELPER ============
 pages.helper = async () => {
   $('#pageTitle').textContent = '👥 Helper';
-
+  const works = await dbGetAll('helperWork');
   const helpers = await dbGetAll('helpers');
   const pays = await dbGetAll('helperPayments');
+  const works = await dbGetAll('helperWork');
   const todayPays = pays.filter(p => isToday(p.createdAt)).reverse();
   const todayTotal = todayPays.reduce((s, p) => s + p.total, 0);
-
+  const totalWork = works.reduce((s, w) => s + w.total, 0);
+ const totalPaid = pays.reduce((s, p) => s + p.total, 0);
+ const pendingAmount = totalWork - totalPaid;
   $('#main').innerHTML = `
     <div class="card">
       <h3>➕ Helper ko Payment</h3>
@@ -237,6 +246,9 @@ pages.helper = async () => {
     <div class="highlight-box pink">
       Aaj helper ko diya: ${inr(todayTotal)}
     </div>
+    <div class="highlight-box">
+  💰 Total Pending: ${inr(pendingAmount)}
+     </div>
 
     <h3 class="section-title">📋 Aaj Ka Payment</h3>
     <div>
@@ -274,11 +286,12 @@ pages.helper = async () => {
     }
     const count = +$('#hCount').value, rate = +$('#hRate').value;
     if (!helper || !count || !rate) return toast('Sab fields bharein');
-    await dbAdd('helperPayments', { helper, count, rate, total: count * rate, date: today() });
+   await dbAdd('helperWork', { helper, count, rate, total: count * rate, date: today() });
     toast('✅ Save ho gaya');
     pages.helper();
   });
 };
+
 
 // ============ EXPENSE ============
 pages.expense = async () => {
@@ -614,6 +627,37 @@ navigator.serviceWorker.register('sw.js')
   .then(() => console.log("SW registered"))
   .catch(console.error);  });
 }
+let tapCount = 0;
+
+document.addEventListener("DOMContentLoaded", () => {
+  const title = document.getElementById("pageTitle");
+  if (!title) return;
+
+  title.addEventListener("click", () => {
+    tapCount++;
+    if (tapCount === 5) {
+      const pin = prompt("PIN daalein");
+      if (pin === "4321") {   // 👉 isko change kar lena baad me
+        isUnlocked = true;
+        alert("Unlocked");
+        renderPage('dashboard');
+      }
+      tapCount = 0;
+    }
+  });
+});
 
 // ============ INIT ============
 renderPage('dashboard');
+window.payHelper = async () => {
+  const amount = prompt("Kitna paisa dena hai?");
+  if (!amount) return;
+
+  await dbAdd('helperPayments', {
+    total: Number(amount),
+    date: today()
+  });
+
+  alert("Payment saved");
+  renderPage('helper');
+};
