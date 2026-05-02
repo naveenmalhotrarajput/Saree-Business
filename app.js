@@ -251,6 +251,24 @@ const totalWork = helperWorks.reduce((s, w) => s + w.total, 0);
         <label>Rate per Saree (₹)</label>
         <input type="number" id="hRate" inputmode="numeric" placeholder="0" />
       </div>
+      <hr>
+
+<h3>💸 Helper Payment</h3>
+
+<div class="form-group">
+  <label>Helper ko kitna diya?</label>
+  <input type="number" id="payAmount" placeholder="₹ amount" />
+</div>
+
+<button onclick="payHelper()" class="primary-btn">
+  💸 Payment Save
+</button>
+
+<br><br>
+
+<button onclick="clearPending()" class="danger-btn">
+  ❌ Pending Reset
+</button>
       <div class="highlight-box" id="hTotal">Total: ₹0</div>
       <button class="btn btn-primary" id="saveHelper">✅ Payment Save</button>
     </div>
@@ -268,8 +286,8 @@ const totalWork = helperWorks.reduce((s, w) => s + w.total, 0);
         todayPays.map(p => `
           <div class="list-item">
             <div class="info">
-              <div class="name">${p.helper}</div>
-              <div class="sub">${p.count} saree × ${inr(p.rate)}</div>
+              <div class="name">${p.helper || 'Payment'}</div>
+<div class="sub">${p.count ? p.count + ' saree × ' + inr(p.rate) : 'Manual Payment'}</div>
             </div>
             <div class="amount">${inr(p.total)}</div>
             <button class="del-btn" onclick="deleteItem('helperPayments', ${p.id})">🗑️</button>
@@ -661,15 +679,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ============ INIT ============
 renderPage('dashboard');
+
+// ================= PAY HELPER =================
 window.payHelper = async () => {
-  const amount = prompt("Kitna paisa dena hai?");
-  if (!amount) return;
+  const amt = Number(document.getElementById('payAmount').value);
+
+  if (!amt || amt <= 0) {
+    alert("Valid amount daalo");
+    return;
+  }
 
   await dbAdd('helperPayments', {
-    total: Number(amount),
+    total: amt,
     date: today()
   });
 
   alert("Payment saved");
+  renderPage('helper');
+};
+
+
+// ================= CLEAR PENDING =================
+window.clearPending = async () => {
+  if (!confirm("Saara pending clear karna hai?")) return;
+
+  const works = await dbGetAll('helperWork');
+
+  const total = works.reduce((s, w) => s + w.total, 0);
+
+  await dbAdd('helperPayments', {
+    total: total,
+    date: today()
+  });
+
+  alert("Pending cleared");
   renderPage('helper');
 };
