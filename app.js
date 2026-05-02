@@ -58,6 +58,14 @@ pages.dashboard = async () => {
   const totalPaid = loanPays.reduce((s, p) => s + p.amount, 0);
   const loanRemaining = totalLoan - totalPaid;
 
+const helperWorks = await dbGetAll('helperWork');
+// helperPays already upar defined hai
+
+const totalWork = helperWorks.reduce((s, w) => s + w.total, 0);
+const totalPaid = helperPays.reduce((s, p) => s + p.total, 0);
+
+const pendingAmount = totalWork - totalPaid;
+
   const displayEarning = isUnlocked ? todayEarning : Math.floor(250 + Math.random()*100);
 const displayExpense = isUnlocked ? todayExpense : Math.floor(80 + Math.random()*50);
 const displayHelper = isUnlocked ? todayHelper : Math.floor(60 + Math.random()*40);

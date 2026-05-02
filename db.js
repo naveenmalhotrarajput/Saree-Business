@@ -1,7 +1,17 @@
 // Lightweight IndexedDB wrapper
 const DB_NAME = 'SareeBusinessDB';
 const DB_VERSION = 1;
-const STORES = ['shops', 'orders', 'work', 'helpers', 'helperWork', 'helperPayments', 'expenses', 'loans', 'loanPayments'];
+const STORES = [
+  'shops',
+  'orders',
+  'work',
+  'helpers',
+  'helperPayments',
+  'helperWork', // ✅ YE ADD KARO
+  'expenses',
+  'loans',
+  'loanPayments'
+];
 let dbInstance = null;
 
 function openDB() {
