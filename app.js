@@ -79,6 +79,10 @@ const displayNet = isUnlocked ? netToday : displayEarning - displayExpense - dis
         <div class="label">Aaj ka Kharcha</div>
         <div class="value">${inr(displayExpense)}</div>
       </div>
+      <div class="highlight-box">
+  <div class="label">💰 Total Pending</div>
+  <div class="value">${inr(pendingAmount)}</div>
+</div>
       <div class="stat-card blue">
         <div class="label">Helper ko Diya</div>
         <div class="value">${inr(displayHelper)}</div>
@@ -207,13 +211,12 @@ pages.work = async () => {
 // ============ HELPER ============
 pages.helper = async () => {
   $('#pageTitle').textContent = '👥 Helper';
-  const works = await dbGetAll('helperWork');
+const helperWorks = await dbGetAll('helperWork');
   const helpers = await dbGetAll('helpers');
   const pays = await dbGetAll('helperPayments');
-  const works = await dbGetAll('helperWork');
   const todayPays = pays.filter(p => isToday(p.createdAt)).reverse();
   const todayTotal = todayPays.reduce((s, p) => s + p.total, 0);
-  const totalWork = works.reduce((s, w) => s + w.total, 0);
+const totalWork = helperWorks.reduce((s, w) => s + w.total, 0);
  const totalPaid = pays.reduce((s, p) => s + p.total, 0);
  const pendingAmount = totalWork - totalPaid;
   $('#main').innerHTML = `
