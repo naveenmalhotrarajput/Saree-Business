@@ -54,22 +54,23 @@ pages.dashboard = async () => {
   const todayHelper = helperPays.filter(h => isToday(h.createdAt)).reduce((s, h) => s + h.total, 0);
   const netToday = todayEarning - todayExpense - todayHelper;
 
+  // 🔧 FIX 1: rename loan totalPaid
   const totalLoan = loans.reduce((s, l) => s + l.amount, 0);
-  const totalPaid = loanPays.reduce((s, p) => s + p.amount, 0);
-  const loanRemaining = totalLoan - totalPaid;
+  const loanPaid = loanPays.reduce((s, p) => s + p.amount, 0);
+  const loanRemaining = totalLoan - loanPaid;
 
-const helperWorks = await dbGetAll('helperWork');
-// helperPays already upar defined hai
+  // 🔧 FIX 2: helper pending calculation
+  const helperWorks = await dbGetAll('helperWork');
 
-const totalWork = helperWorks.reduce((s, w) => s + w.total, 0);
-const totalPaid = helperPays.reduce((s, p) => s + p.total, 0);
+  const totalWork = helperWorks.reduce((s, w) => s + w.total, 0);
+  const helperPaid = helperPays.reduce((s, p) => s + p.total, 0);
 
-const pendingAmount = totalWork - totalPaid;
+  const pendingAmount = totalWork - helperPaid;
 
   const displayEarning = isUnlocked ? todayEarning : Math.floor(250 + Math.random()*100);
-const displayExpense = isUnlocked ? todayExpense : Math.floor(80 + Math.random()*50);
-const displayHelper = isUnlocked ? todayHelper : Math.floor(60 + Math.random()*40);
-const displayNet = isUnlocked ? netToday : displayEarning - displayExpense - displayHelper;
+  const displayExpense = isUnlocked ? todayExpense : Math.floor(80 + Math.random()*50);
+  const displayHelper = isUnlocked ? todayHelper : Math.floor(60 + Math.random()*40);
+  const displayNet = isUnlocked ? netToday : displayEarning - displayExpense - displayHelper;
 
   // Smart suggestion
   const loanSuggest = Math.max(0, Math.round(netToday * 0.6));
